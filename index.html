@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -743,8 +744,6 @@ footer { background:var(--c1); text-align:center; padding:clamp(44px,6vw,68px) 2
 }
 
 </style>
-  
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
 <body>
 <!-- NAV -->
@@ -1143,9 +1142,6 @@ footer { background:var(--c1); text-align:center; padding:clamp(44px,6vw,68px) 2
     </button>
   </div>
 </div>
-
-
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
 
 <script>
@@ -1368,19 +1364,82 @@ function setLang(lang){
   }, {passive:true});
 })();
 
+var N8N_WEBHOOKS={
+  event:'http://187.77.89.15:5678/webhook/jasmin-event',
+  chat:'http://187.77.89.15:5678/webhook/jasmin-chat'
+};
+function n8nPost(url,payload){
+  return fetch(url,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(payload),
+    mode:'cors'
+  });
+}
+function n8nLogChat(payload){
+  try{
+    payload.lang=LANG;
+    payload.page=location.href;
+    payload.sent_at=new Date().toISOString();
+    return n8nPost(N8N_WEBHOOKS.chat,payload).catch(function(){});
+  }catch(ex){}
+}
+
+function chLocalReply(txt){
+  var q=(txt||'').toLowerCase();
+  var isArabic=/[\u0600-\u06ff]/.test(txt||'');
+  var hasBrand=/(dior|chanel|tom ford|hugo boss|gucci|armani|versace|sauvage|miss dior|jadore|no\.?\s?5)/i.test(txt||'');
+  if(hasBrand){
+    return isArabic
+      ? 'لدى CHOGAN تشكيلة كبيرة من عطور Extrait de Parfum الإيطالية الحصرية لكل الأذواق. Jasmin تساعدك شخصياً في اختيار العطر المناسب. اكتبلها على واتساب: https://wa.me/4915229582544'
+      : 'CHOGAN hat eine riesige Auswahl exklusiver Extrait de Parfum Kompositionen aus Italien fuer jeden Geschmack und jede Note. Jasmin hilft dir persoenlich den richtigen Duft zu finden! WhatsApp: https://wa.me/4915229582544';
+  }
+  if(isArabic){
+    if(/ربح|ارباح|دخل|كم|مصاري|عمولة|راتب|verdienst/i.test(q))return 'الربح يكون من هامش بيع يصل إلى 50% على العطور، ومع بناء الفريق توجد مستويات دخل أعلى. البداية 125 يورو مرة واحدة، بدون مخزون وبدون حد أدنى للطلب. Jasmin تشرح لك التفاصيل على واتساب: https://wa.me/4915229582544';
+    if(/سجل|تسجيل|احجز|موعد|event|party/i.test(q))return 'تقدري/تقدر تسجل في فعالية Parfum & Beauty Party عبر الفورم في الصفحة. الموعد 19 مايو 2026 الساعة 19:00 في King & Queen of Hair في Langen.';
+    return 'أكيد، أنا مساعد Jasmin لـ CHOGAN. أقدر أجاوبك عن العطور، المنتجات، التسجيل، أو فرصة العمل. للتواصل المباشر: https://wa.me/4915229582544';
+  }
+  if(LANG==='en'){
+    if(/earn|income|commission|margin|money|career|business|verdienst/.test(q))return 'With CHOGAN, you earn through perfume sales with up to 50% margin. The start is 125 EUR once, with no stock and no minimum order. Jasmin can explain the next steps personally on WhatsApp: https://wa.me/4915229582544';
+    if(/register|event|party|date|book|join/.test(q))return 'You can register for the Parfum & Beauty Party through the form on this page. The event is on 19 May 2026 at 19:00 at King & Queen of Hair in Langen.';
+    if(/perfume|fragrance|product|chogan/.test(q))return 'CHOGAN offers exclusive Italian Extrait de Parfum, beauty products, care products and oils. Jasmin can help you find the right direction personally.';
+    return 'I can help with CHOGAN products, perfume, the business opportunity, earnings or event registration. For direct contact, write Jasmin on WhatsApp: https://wa.me/4915229582544';
+  }
+  if(LANG==='es'){
+    if(/ganar|ingreso|comision|margen|dinero|negocio|verdienst/.test(q))return 'Con CHOGAN ganas mediante ventas con hasta 50% de margen en perfumes. El inicio cuesta 125 EUR una sola vez, sin stock y sin pedido minimo. Jasmin te explica todo por WhatsApp: https://wa.me/4915229582544';
+    if(/registr|evento|party|fecha|reserva/.test(q))return 'Puedes registrarte para la Parfum & Beauty Party con el formulario de esta pagina. El evento es el 19 de mayo de 2026 a las 19:00 en King & Queen of Hair, Langen.';
+    return 'Te ayudo con productos CHOGAN, perfumes, negocio, ganancias o registro del evento. Contacto directo con Jasmin: https://wa.me/4915229582544';
+  }
+  if(/verdienst|einkommen|provision|marge|geld|karriere|business|verdienen|einstieg|starten|berater/.test(q))return 'Bei CHOGAN verdienst du ueber den Verkauf mit bis zu 50% Marge auf Parfums. Der Einstieg liegt bei 125 EUR einmalig, ohne Lager und ohne Mindestbestellung. Jasmin erklaert dir alles persoenlich auf WhatsApp: https://wa.me/4915229582544';
+  if(/anmeld|registr|event|party|termin|platz|dabei/.test(q))return 'Du kannst dich direkt ueber das Formular auf dieser Seite anmelden. Die Parfum & Beauty Party ist am 19. Mai 2026 um 19:00 Uhr bei King & Queen of Hair in Langen.';
+  if(/parfum|duft|produkt|chogan|pflege|make.?up|oel|öl/.test(q))return 'CHOGAN bietet exklusive italienische Extrait de Parfum Kompositionen, Pflege, Make-up und Oele. Jasmin hilft dir persoenlich, die passende Richtung zu finden.';
+  return 'Ich helfe dir gerne zu CHOGAN Produkten, Parfum, Business, Verdienst oder Anmeldung. Fuer direkten Kontakt schreibe Jasmin auf WhatsApp: https://wa.me/4915229582544';
+}
+
 function chToggle(){CH_OPEN=!CH_OPEN;document.getElementById('chWin').classList.toggle('open',CH_OPEN);if(CH_OPEN){var b=document.getElementById('chBdg');if(b)b.style.display='none';document.getElementById('chInp').focus();}}
 function chChip(i){var txt=T[LANG].chips[i];if(txt)document.getElementById('chInp').value=txt.slice(3).trim();document.getElementById('chChips').style.display='none';chSend();}
 async function chSend(){
   var inp=document.getElementById('chInp'),txt=inp.value.trim();
   if(!txt)return;inp.value='';
   chAddMsg('usr',txt);CH_HIST.push({role:'user',content:txt});
+  n8nLogChat({event:'user_message',message:txt,history:CH_HIST.slice(-6)});
   var tid=chTyping();
   try{
-    var r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,system:T[LANG].sys,messages:CH_HIST})});
+    var ctrl=new AbortController();
+    var timeout=setTimeout(function(){ctrl.abort();},7000);
+    var r=await fetch('https://orange-hill-a6b8.qosai-web.workers.dev',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,system:T[LANG].sys,messages:CH_HIST}),signal:ctrl.signal});
+    clearTimeout(timeout);
     var d=await r.json();chRmTyping(tid);
-    var rep=(d.content&&d.content[0])?d.content[0].text:'...';
+    if(!r.ok)throw new Error((d.error&&d.error.message)||('Worker '+r.status));
+    var rep=(d.content&&d.content[0]&&d.content[0].text)?filterBrands(d.content[0].text):chLocalReply(txt);
     chAddMsg('bot',rep);CH_HIST.push({role:'assistant',content:rep});
-  }catch(ex){chRmTyping(tid);chAddMsg('bot','\u26a0\ufe0f +49 152 295 82 544');}
+    n8nLogChat({event:'assistant_reply',message:txt,reply:rep,history:CH_HIST.slice(-6)});
+  }catch(ex){
+    chRmTyping(tid);
+    var fallback=chLocalReply(txt);
+    chAddMsg('bot',fallback);CH_HIST.push({role:'assistant',content:fallback});
+    n8nLogChat({event:'chat_fallback',message:txt,reply:fallback,error:String(ex),history:CH_HIST.slice(-6)});
+  }
 }
 
 // Brand name filter - removes brand mentions from AI responses
@@ -1546,8 +1605,6 @@ if(window.visualViewport){
 document.addEventListener('DOMContentLoaded',function(){var s;try{s=localStorage.getItem('jmg_lang');}catch(ex){}setLang(s||detectLang());});
 
 
-var EJS={publicKey:'YOUR_EMAILJS_PUBLIC_KEY',serviceId:'YOUR_SERVICE_ID',templateJasmin:'YOUR_TEMPLATE_JASMIN_ID',templateVisitor:'YOUR_TEMPLATE_VISITOR_ID'};
-(function(){if(EJS.publicKey!=='YOUR_EMAILJS_PUBLIC_KEY')emailjs.init({publicKey:EJS.publicKey});})();
 async function evSubmit(e){
   e.preventDefault();
   var btn=document.getElementById('evBtn');btn.disabled=true;btn.textContent='...';
@@ -1556,16 +1613,30 @@ async function evSubmit(e){
   var email=form.querySelector('[name="email"]').value.trim();
   var phone=form.querySelector('[name="phone"]').value.trim()||'-';
   var guests=form.querySelector('[name="guests"]').value;
-  var pJ={guest_name:name,guest_email:email,guest_phone:phone,guest_count:guests,lang:LANG,event_date:'19. Mai 2026 · 19:00 Uhr',event_place:'King & Queen of Hair · Langen',to_email:'Hallo@jasmin-grau.de',reply_to:email};
-  var msgs={de:'Hallo '+name+',\n\nwir haben deine Anmeldung erhalten!\n\nTermin: 19. Mai 2026 · 19:00 Uhr\nOrt: King & Queen of Hair · Langen\n\nBis bald!\nJasmin +49 152 295 82 544',en:'Hello '+name+',\n\nwe received your registration!\n\nDate: 19 May 2026 · 19:00\nVenue: King & Queen of Hair · Langen\n\nSee you soon!\nJasmin +49 152 295 82 544',es:'Hola '+name+',\n\n¡recibimos tu registro!\n\nFecha: 19 mayo 2026 · 19:00\nLugar: King & Queen of Hair · Langen\n\n¡Hasta pronto!\nJasmin +49 152 295 82 544'};
-  var pV={to_name:name,to_email:email,subject:'🌹 Glow & Grow Event – Anmeldung bestätigt',message:msgs[LANG]||msgs.de,reply_to:'Hallo@jasmin-grau.de'};
+  var payload={
+    event:'event_registration',
+    guest_name:name,
+    guest_email:email,
+    guest_phone:phone,
+    guest_count:guests,
+    lang:LANG,
+    event_date:'19. Mai 2026 · 19:00 Uhr',
+    event_place:'King & Queen of Hair · Langen',
+    to_email:'Hallo@jasmin-grau.de',
+    reply_to:email,
+    page:location.href,
+    submitted_at:new Date().toISOString()
+  };
   try{
-    if(EJS.publicKey==='YOUR_EMAILJS_PUBLIC_KEY'){document.getElementById('evFormEl').style.display='none';document.getElementById('evSuccess').style.display='block';return;}
-    await emailjs.send(EJS.serviceId,EJS.templateJasmin,pJ);
-    await emailjs.send(EJS.serviceId,EJS.templateVisitor,pV);
+    var r=await n8nPost(N8N_WEBHOOKS.event,payload);
+    if(!r.ok)throw new Error('n8n '+r.status);
     document.getElementById('evFormEl').style.display='none';
     document.getElementById('evSuccess').style.display='block';
-  }catch(ex){btn.disabled=false;btn.textContent=T[LANG].f_submit||'🌹';alert('Fehler. WhatsApp: +49 152 295 82 544');}
+  }catch(ex){
+    btn.disabled=false;
+    btn.textContent=T[LANG].f_submit||'🌹';
+    alert('Fehler. WhatsApp: +49 152 295 82 544');
+  }
 }
 
 </script>
